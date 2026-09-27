@@ -28,6 +28,29 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class LedgerImportPayload(BaseModel):
+    """表格文件通道上传内容：前端读出文件文本后随文件名一起提交。"""
+
+    filename: str = ""
+    content: str = ""
+
+
+class LedgerConfirmPayload(BaseModel):
+    """确认入库时只需带回导入批次号。"""
+
+    batch_id: str = ""
+
+
+class LedgerImportResult(BaseModel):
+    """导入解析结果：可接收行直接确认，问题行进入待修正清单。"""
+
+    ok: bool
+    message: str
+    batch_id: str | None = None
+    accepted: list[dict[str, Any]] = Field(default_factory=list)
+    pending: list[dict[str, Any]] = Field(default_factory=list)
+
+
 
 class PlantEntry(BaseModel):
     """光伏电站明细结构。"""
