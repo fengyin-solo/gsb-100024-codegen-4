@@ -74,3 +74,18 @@ npm run dev
   `backend/app/routers/<模块>.py`，业务规则在 `backend/app/services/<模块>.py`。
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
+
+## 逆变器表格文件通道
+
+逆变器台账支持用表格文件（CSV，UTF-8 带 BOM，Excel/WPS 可直接打开）离线流转：
+
+1. 在逆变器管理页选定设备范围（所属电站、运行状态、编号关键字），
+   `GET /api/inverter/sheet/template` 生成模板，范围内的逆变器会预填进去，
+   空范围也返回带表头的模板。
+2. 按模板填好逆变器编号、型号、额定功率、所属电站后上传，
+   `POST /api/inverter/sheet/preview` 只接收四列齐全的可识别行；
+   编号重复（与台账或文件内前行冲突）和额定功率写法认不出的行进入待修正清单，
+   其余行直接忽略。功率支持 `250`、`250kW`、`250千瓦`，入库统一归一成 `250kW`。
+3. `POST /api/inverter/sheet/commit` 确认导入，入库前按当前台账再复核一遍。
+4. `POST /api/inverter/sheet/export` 把确认后的结果打包成新的表格文件带回现场，
+   列口径与模板一致，可再次走导入流程。

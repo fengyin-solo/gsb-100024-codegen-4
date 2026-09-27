@@ -28,6 +28,18 @@ class EntryPayload(BaseModel):
     remark: str | None = None
 
 
+class SheetPreviewPayload(BaseModel):
+    """表格文件通道：上传的表格文本内容（前端读文件后原样提交）。"""
+
+    content: str = ""
+
+
+class SheetRowsPayload(BaseModel):
+    """表格文件通道：确认导入或打包下载时提交的行集合。"""
+
+    rows: list[dict[str, Any]] = Field(default_factory=list)
+
+
 
 class PlantEntry(BaseModel):
     """光伏电站明细结构。"""
